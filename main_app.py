@@ -113,7 +113,38 @@ def run_app():
         st.info("**Hint:** Use `demo` and `demo123`")
     elif st.session_state["authentication_status"] == None:
         st.warning('Please enter your username and password')
-        st.info("Use the sidebar to register if you are a new user.")
+        
+        # --- NEW: Add the registration form inside an expander ---
+        try:
+            with st.expander("New user? Register here"):
+                email = st.text_input("Email", key="reg_email")
+                name_input = st.text_input("Name", key="reg_name")
+                password = st.text_input("Password", type="password", key="reg_password")
+
+                if st.button("Register"):
+                    if email and name_input and password:
+                        # Check if user already exists
+                        if email in config['credentials']['usernames']:
+                            st.error('User already exists. Please login.')
+                        else:
+                            # Add new user to the config
+                            hashed_pw = stauth.Hasher().hash(password)
+                            config['credentials']['usernames'][email] = {
+                                'email': email,
+                                'name': name_input,
+                                'password': hashed_pw,
+                                'plan': 'free',
+                                'scans_used': 0
+                            }
+                            # Save the updated config file
+                            with open(CONFIG_PATH, 'w') as file:
+                                yaml.dump(config, file, default_flow_style=False)
+                            st.success('User registered successfully! Please log in with your email.')
+                            st.rerun() # Rerun to update the state
+                    else:
+                        st.error("Please fill out all fields.")
+        except Exception as e:
+            st.error(f"An error occurred during registration: {e}")
     
     # --- LOGGED-IN USER VIEW ---
     if st.session_state["authentication_status"]:
