@@ -1,0 +1,20 @@
+# --- Core & Web UI ---
+streamlit>=1.20
+streamlit-authenticator>=0.3.0
+
+# --- ML & NLP ---
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch --platform linux
+transformers>=4.30
+numpy
+
+
+# --- Text & File Handling ---
+textstat
+PyYAML
+PyMuPDF
+python-docx
+lxml 
+
+# --- Other Utilities ---
+stripe
