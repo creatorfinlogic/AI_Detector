@@ -201,6 +201,8 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# Ignore the user configuration file
+config.yaml
 # Marimo
 marimo/_static/
 marimo/_lsp/
