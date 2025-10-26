@@ -2,19 +2,18 @@
 streamlit>=1.20
 streamlit-authenticator>=0.3.0
 
-# --- ML & NLP ---
+# --- ML & NLP (Optimized for Streamlit Cloud) ---
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch --platform linux
+torch
 transformers>=4.30
 numpy
-
 
 # --- Text & File Handling ---
 textstat
 PyYAML
 PyMuPDF
 python-docx
-lxml 
+lxml
 
 # --- Other Utilities ---
 stripe
