@@ -53,7 +53,7 @@ def load_or_create_config():
                     'email': 'demo@example.com',
                     'name': 'Demo User',
                     'password': hashed_password,
-                    'plan': 'free',
+                    'plan': 'pro',
                     'scans_used': 0
                 }
             }},
