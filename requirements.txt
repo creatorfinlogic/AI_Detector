@@ -2,9 +2,9 @@
 streamlit==1.32.0
 streamlit-authenticator==0.3.2
 
-# ML / NLP
-torch>=2.5.0
-transformers==4.36.2
+# ML / NLP (Python 3.13 compatible)
+torch==2.5.1
+transformers>=4.36,<5.0
 numpy==1.26.4
 
 # Text analysis
@@ -15,9 +15,6 @@ PyYAML==6.0.1
 python-docx==1.1.0
 lxml==5.1.0
 PyMuPDF==1.23.9
-
-# OpenAI (CRITICAL)
-openai>=1.0.0
 
 # Payments (future)
 stripe==8.6.0
