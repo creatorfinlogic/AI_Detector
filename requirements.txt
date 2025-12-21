@@ -2,17 +2,22 @@
 streamlit==1.32.0
 streamlit-authenticator==0.3.2
 
-# OpenAI API
-openai>=1.0.0
+# ML / NLP
+torch==2.0.1
+transformers==4.36.2
+numpy==1.26.4
 
 # Text analysis
-numpy==1.26.4
 textstat==0.7.3
 PyYAML==6.0.1
 
 # File handling
 python-docx==1.1.0
 lxml==5.1.0
+PyMuPDF==1.23.9
+
+# OpenAI (CRITICAL)
+openai>=1.0.0
 
 # Payments (future)
 stripe==8.6.0
