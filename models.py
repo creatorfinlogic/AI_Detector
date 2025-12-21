@@ -1,68 +1,149 @@
-
-
 # /ai_detector_pro/models.py
+# VERSION: 2.0 – Stable (Detection Models Only)
 
 import streamlit as st
 import torch
 import torch.nn.functional as F
 from transformers import (
-    GPT2LMHeadModel, GPT2Tokenizer,
-    AutoModelForSequenceClassification, AutoTokenizer
+    GPT2LMHeadModel,
+    GPT2Tokenizer,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
 )
 
+# ==========================================================
+# MODEL LOADER
+# ==========================================================
 @st.cache_resource(show_spinner="Loading AI models...")
 def load_models():
     """
-    Loads and caches the GPT-2 and RoBERTa models and tokenizers.
-    This function runs only once per session.
+    Loads and caches:
+    - GPT-2 (for perplexity / predictability)
+    - RoBERTa OpenAI Detector (AI vs Human classification)
+
+    Runs once per Streamlit session.
     """
     try:
-        # Using smaller models for better performance on free-tier hosting
-        # GPT-2 small for perplexity calculation
+        # GPT-2 (small) for perplexity
         gpt2_tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         gpt2_model = GPT2LMHeadModel.from_pretrained("gpt2")
-        gpt2_model.eval() # Set to evaluation mode
+        gpt2_model.eval()
 
-        # RoBERTa detector model
-        roberta_tokenizer = AutoTokenizer.from_pretrained("roberta-large-openai-detector")
-        roberta_model = AutoModelForSequenceClassification.from_pretrained("roberta-large-openai-detector")
-        roberta_model.eval() # Set to evaluation mode
+        # RoBERTa OpenAI detector
+        roberta_tokenizer = AutoTokenizer.from_pretrained(
+            "roberta-large-openai-detector"
+        )
+        roberta_model = AutoModelForSequenceClassification.from_pretrained(
+            "roberta-large-openai-detector"
+        )
+        roberta_model.eval()
 
         return {
-            "gpt2_tok": gpt2_tokenizer, "gpt2_model": gpt2_model,
-            "roberta_tok": roberta_tokenizer, "roberta_model": roberta_model
+            "gpt2_tok": gpt2_tokenizer,
+            "gpt2_model": gpt2_model,
+            "roberta_tok": roberta_tokenizer,
+            "roberta_model": roberta_model,
         }
+
     except Exception as e:
-        st.error(f"Error loading models: {e}. The app may not function correctly.")
+        st.error(
+            f"❌ Error loading AI models: {e}\n"
+            "The app may not function correctly."
+        )
         return None
 
+# ==========================================================
+# PERPLEXITY (GPT-2)
+# ==========================================================
 def calculate_perplexity(text, models):
-    """Calculates the perplexity of a given text using the cached GPT-2 model."""
-    if not models: return 1000.0
+    """
+    Calculates GPT-2 perplexity.
+    Lower = more predictable (AI-like)
+    Higher = more varied (human-like)
+    """
+    if not models:
+        return 1000.0
+
     tokenizer = models["gpt2_tok"]
     model = models["gpt2_model"]
-    
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=1024)
-    if inputs["input_ids"].size(1) < 2: return 1000.0 # Perplexity is undefined for very short text
+
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=1024,
+    )
+
+    if inputs["input_ids"].size(1) < 2:
+        return 1000.0
 
     with torch.no_grad():
-        loss = model(**inputs, labels=inputs["input_ids"]).loss
-    
+        loss = model(
+            **inputs,
+            labels=inputs["input_ids"]
+        ).loss
+
     return float(torch.exp(loss))
 
+# ==========================================================
+# AI vs HUMAN PROBABILITY (RoBERTa)
+# ==========================================================
 def calculate_roberta_score(text, models):
-    """Calculates the 'human-likeness' probability using the cached RoBERTa model."""
-    if not models: return 50.0 # Default to neutral if model fails
+    """
+    Returns HUMAN probability (0–100).
+    AI probability = 100 - this value.
+    """
+    if not models:
+        return 50.0
+
     tokenizer = models["roberta_tok"]
     model = models["roberta_model"]
-    
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
-    
+
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512,
+    )
+
     with torch.no_grad():
         logits = model(**inputs).logits
-    
-    # The model outputs probabilities for ["AI", "Human"]. We want the "Human" probability.
-    probabilities = F.softmax(logits, dim=1).squeeze().tolist()
-    human_probability = probabilities[1] * 100
-    
-    return float(human_probability)
+
+    probs = F.softmax(logits, dim=1).squeeze().tolist()
+
+    # Index 1 = Human (per model documentation)
+    return float(probs[1] * 100)
+
+# ==========================================================
+# (OPTIONAL) LEGACY GPT-4o REWRITE – DEPRECATED
+# ==========================================================
+def get_gpt4o_rewrite(sentence, api_key):
+    """
+    DEPRECATED.
+    Kept for backward compatibility only.
+    Use rewrite_text_for_human_score() in analysis.py instead.
+    """
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=api_key)
+
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a professional editor. "
+                        "Rewrite the sentence clearly and actively. "
+                        "Preserve all facts."
+                    ),
+                },
+                {"role": "user", "content": sentence},
+            ],
+            temperature=0.3,
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        return f"API Error: {str(e)}"
