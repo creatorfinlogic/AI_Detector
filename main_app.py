@@ -3,14 +3,14 @@
 # FILE: main_app.py (PART 1/2)
 # ==========================================================
 
-import importlib.util
-import sys
-
-print("Python:", sys.version)
-print("Authenticator:",
-      importlib.util.find_spec("streamlit_authenticator"))
+try:
+    import streamlit_authenticator as stauth
+    print("Authenticator imported successfully")
+except Exception as e:
+    stauth = None
+    print("IMPORT FAILED:", repr(e))
 import streamlit as st
-import streamlit_authenticator as stauth
+#import streamlit_authenticator as stauth
 import yaml
 import os
 from yaml.loader import SafeLoader
