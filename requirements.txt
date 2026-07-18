@@ -1,6 +1,5 @@
 # ==========================================================
 # AI Detector Pro
-# Streamlit Cloud (Python 3.13)
 # ==========================================================
 
 # Core UI
@@ -13,6 +12,9 @@ setuptools>=75
 torch==2.5.1
 transformers>=4.36,<5.0
 numpy>=2.1,<2.3
+
+# OpenAI
+openai>=1.40.0
 
 # Configuration
 PyYAML==6.0.1
