@@ -3,11 +3,18 @@
 # FILE: main_app.py (PART 1/2)
 # ==========================================================
 
+import importlib.util
+import sys
+
+print("Python:", sys.version)
+print("Authenticator:",
+      importlib.util.find_spec("streamlit_authenticator"))
 import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 import os
 from yaml.loader import SafeLoader
+
 
 # --- Local Imports ---
 from models import load_models
