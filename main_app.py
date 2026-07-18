@@ -5,9 +5,9 @@
 
 import streamlit as st
 #import streamlit_authenticator as stauth
-import yaml
+#import yaml
 import os
-from yaml.loader import SafeLoader
+#from yaml.loader import SafeLoader
 
 
 # --- Local Imports ---
@@ -48,9 +48,9 @@ PLANS = {
     "pro": {"name": "Pro", "scans_limit": 500},
 }
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
-with open(CONFIG_PATH) as f:
-    config = yaml.load(f, Loader=SafeLoader)
+#CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
+#with open(CONFIG_PATH) as f:
+    #config = yaml.load(f, Loader=SafeLoader)
 
 # ==========================================================
 # HELPERS
