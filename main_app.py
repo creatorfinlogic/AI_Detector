@@ -4,7 +4,7 @@
 # ==========================================================
 
 import streamlit as st
-import streamlit_authenticator as stauth
+#import streamlit_authenticator as stauth
 import yaml
 import os
 from yaml.loader import SafeLoader
