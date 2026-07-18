@@ -6,10 +6,41 @@
 
 import re
 import numpy as np
-import textstat
+#import textstat
 from openai import OpenAI
 
 from models import calculate_perplexity, calculate_roberta_score
+
+import re
+
+def calculate_readability(text: str) -> float:
+    """
+    Simple Flesch–Kincaid approximation.
+    Avoids dependency on textstat.
+    """
+
+    sentences = max(len(re.findall(r"[.!?]", text)), 1)
+
+    words = re.findall(r"\b\w+\b", text)
+
+    if not words:
+        return 50.0
+
+    syllables = 0
+
+    for word in words:
+        word = word.lower()
+        count = len(re.findall(r"[aeiouy]+", word))
+        syllables += max(1, count)
+
+    words_per_sentence = len(words) / sentences
+    syllables_per_word = syllables / len(words)
+
+    return (
+        0.39 * words_per_sentence
+        + 11.8 * syllables_per_word
+        - 15.59
+    )
 
 # ==========================================================
 # CONSTANTS
