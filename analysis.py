@@ -13,34 +13,6 @@ from models import calculate_perplexity, calculate_roberta_score
 
 import re
 
-def calculate_readability(text: str) -> float:
-    """
-    Simple Flesch–Kincaid approximation.
-    Avoids dependency on textstat.
-    """
-
-    sentences = max(len(re.findall(r"[.!?]", text)), 1)
-
-    words = re.findall(r"\b\w+\b", text)
-
-    if not words:
-        return 50.0
-
-    syllables = 0
-
-    for word in words:
-        word = word.lower()
-        count = len(re.findall(r"[aeiouy]+", word))
-        syllables += max(1, count)
-
-    words_per_sentence = len(words) / sentences
-    syllables_per_word = syllables / len(words)
-
-    return (
-        0.39 * words_per_sentence
-        + 11.8 * syllables_per_word
-        - 15.59
-    )
 
 # ==========================================================
 # CONSTANTS
@@ -104,10 +76,32 @@ def calculate_lexical_diversity(text: str) -> float:
 
 
 def calculate_readability(text: str) -> float:
-    try:
-        return textstat.flesch_kincaid_grade(text)
-    except Exception:
+    """
+    Lightweight Flesch–Kincaid approximation.
+    No external dependencies.
+    """
+    import re
+
+    sentences = max(len(re.findall(r"[.!?]", text)), 1)
+    words = re.findall(r"\b\w+\b", text)
+
+    if not words:
         return 50.0
+
+    syllables = 0
+    for word in words:
+        word = word.lower()
+        count = len(re.findall(r"[aeiouy]+", word))
+        syllables += max(1, count)
+
+    words_per_sentence = len(words) / sentences
+    syllables_per_word = syllables / len(words)
+
+    return (
+        0.39 * words_per_sentence
+        + 11.8 * syllables_per_word
+        - 15.59
+    )
 
 # ==========================================================
 # SCORING
