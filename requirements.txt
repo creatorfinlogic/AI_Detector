@@ -1,21 +1,19 @@
-# ==========================================================
-# AI Detector Pro - Requirements
-# Streamlit Cloud (Python 3.13 Compatible)
-# ==========================================================
-
 # Core UI
 streamlit>=1.44,<2.0
+
+# Build/runtime compatibility
+setuptools>=75
 
 # ML / NLP
 torch==2.5.1
 transformers>=4.36,<5.0
 numpy>=2.1,<2.3
 
-# Text Analysis
+# Text analysis
 textstat==0.7.3
 PyYAML==6.0.1
 
-# File Handling
+# File handling
 python-docx==1.1.0
 PyMuPDF==1.26.3
 
