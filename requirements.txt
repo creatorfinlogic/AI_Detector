@@ -1,11 +1,10 @@
 # Core UI
 streamlit==1.32.0
-#streamlit-authenticator==0.4.2
 
 # ML / NLP
 torch==2.5.1
 transformers>=4.36,<5.0
-numpy==1.26.4
+numpy>=2.1,<2.3
 
 # Text analysis
 textstat==0.7.3
